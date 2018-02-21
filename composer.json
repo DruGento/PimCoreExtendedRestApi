@@ -1,0 +1,23 @@
+{
+    "name": "DruGento/PimCoreExtendedRestApi",
+    "type": "pimcore-plugin",
+    "license": "GPL-3.0-or-later",
+    "description": "Pimcore extended webservice rest controller for multiple objects handling.",
+    "keywords": ["pimcore", "rest", "webservice", "pimcore-plugin"],
+    "require": {
+        "pimcore/installer-plugin": ">=1"
+    },
+    "authors": [
+        {
+            "name": "Drugento Team",
+            "email": "team@drugento.com",
+            "homepage": "http://www.drugento.com",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "PimCoreExtendedRestApi\\": "lib"
+        }
+    }
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<zend-config xmlns:zf="http://framework.zend.com/xml/zend-config-xml/1.0/">
+		<plugin>
+            <pluginName>PimCoreExtendedRestApi</pluginName>
+			<pluginNiceName>Plugin for multiple objects handling by rest</pluginNiceName>
+			<pluginDescription>Pimcore extended webservice rest controller for multiple objects handling</pluginDescription>
+            <pluginVersion>1.0</pluginVersion>
+            <pluginRevision>1</pluginRevision>
+            <pluginBuildTimestamp>0</pluginBuildTimestamp>
+            <pluginIframeSrc></pluginIframeSrc>
+			<pluginClassName>\PimCoreExtendedRestApi\Plugin</pluginClassName>
+			<pluginIncludePaths>
+				<path>/PimCoreExtendedRestApi/lib</path>
+			</pluginIncludePaths>
+			<pluginNamespaces>
+				<namespace>PimCoreExtendedRestApi</namespace>
+			</pluginNamespaces>
+			<pluginJsPaths>
+                <path>/plugins/PimCoreExtendedRestApi/static/js/startup.js</path>
+			</pluginJsPaths>
+			<pluginCssPaths>
+                <path>/plugins/PimCoreExtendedRestApi/static/css/example.css</path>
+			</pluginCssPaths>
+		</plugin>
+</zend-config>
