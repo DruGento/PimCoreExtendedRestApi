@@ -202,7 +202,7 @@ class PimCoreExtendedRestApi_RestController extends \Pimcore\Controller\Action\W
 
     /** Returns a list of object related data matching the given criteria.
      *  Example:
-     *  GET http://[YOUR-DOMAIN]/plugin/PimCoreExtendedRestApi/rest/object-list?apikey=[API-KEY]&order=DESC&offset=3&orderKey=id&limit=2&condition=type%3D%27folder%27
+     *  GET http://[YOUR-DOMAIN]/plugin/PimCoreExtendedRestApi/rest/object-list?apikey=[API-KEY]&order=DESC&offset=3&orderKey=id&limit=2&condition=type%3D%27folder%27&elements=name,price
      *
      * Parameters:
      *      - condition
@@ -213,6 +213,7 @@ class PimCoreExtendedRestApi_RestController extends \Pimcore\Controller\Action\W
      *      - group by key
      *      - objectClass the name of the object class (without "Object_"). If the class does
      *          not exist the filter criteria will be ignored!
+     *      - elements
      */
     public function objectListAction()
     {
@@ -225,6 +226,8 @@ class PimCoreExtendedRestApi_RestController extends \Pimcore\Controller\Action\W
         $limit = $this->getParam("limit");
         $groupBy = $this->getParam("groupBy");
         $objectClass = $this->getParam("objectClass");
+        $elements = $this->getParam("elements");
+        $elementsNames = explode(',', $elements);
         $result = $this->service->getObjectList($condition, $order, $orderKey, $offset, $limit, $groupBy, $objectClass);
 
         $objects = [];
@@ -235,6 +238,16 @@ class PimCoreExtendedRestApi_RestController extends \Pimcore\Controller\Action\W
                     $object = $this->service->getObjectFolderById($value->id);
                 } else {
                     $object = $this->service->getObjectConcreteById($value->id);
+
+                    if ($object && $elements) {
+                        $allowedElements = [];
+                        foreach ($object->elements as $element) {
+                            if (in_array($element->name, $elementsNames)) {
+                                $allowedElements[] = $element;
+                            }
+                        }
+                        $object->elements = $allowedElements;
+                    }
                 }
                 $item = ["id" => $value->id, "success" => true, "data" => $object];
             } else {
