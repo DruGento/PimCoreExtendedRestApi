@@ -19,4 +19,5 @@ If everything went well you will see plugin in `Manage extensions`:
 ## Features ##
 
 *   multiple objects upload (creation) by POST method - [upload example](docs/example/upload.md) - instead of standard single [object creation](https://pimcore.com/docs/4.6.x/Development_Documentation/Web_Services/index.html#page_Create-a-new-Object)
-*   multiple objects search with detailed results in JSON format - [search example](docs/example/search.md) - instead of standard [search](https://pimcore.com/docs/4.6.x/Development_Documentation/Web_Services/index.html#page_Search-Objects) with short results 
+*   multiple objects search with detailed results in JSON format - [search example](docs/example/search.md) - instead of standard [search](https://pimcore.com/docs/4.6.x/Development_Documentation/Web_Services/index.html#page_Search-Objects) with short results
+*   create/update asset by url with metadata - [example](docs/example/asset.md)

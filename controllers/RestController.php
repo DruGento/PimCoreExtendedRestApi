@@ -15,6 +15,7 @@
  */
 
 use Pimcore\Logger;
+use Pimcore\Model\Asset;
 use Pimcore\Model\Object;
 use Pimcore\Model\Element;
 use Pimcore\Model\Webservice;
@@ -262,6 +263,106 @@ class PimCoreExtendedRestApi_RestController extends \Pimcore\Controller\Action\W
         }
 
         $this->encoder->encode(["success" => true, "data" => $objects]);
+    }
+
+    /** end point for create/update asset related data.
+     * - create asset
+     *      PUT or POST http://[YOUR-DOMAIN]/webservice/rest/asset?apikey=[API-KEY]
+     *      body: json-encoded asset data in the same format as returned by get asset by id
+     *              but with missing id field or id set to 0
+     *      returns json encoded asset id
+     * - update asset
+     *      PUT or POST http://[YOUR-DOMAIN]/webservice/rest/asset?apikey=[API-KEY]
+     *      body: same as for create asset but with asset id
+     *      returns json encoded success value
+     * @throws \Exception
+     */
+    public function assetAction()
+    {
+        try {
+            if ($this->isPost() || $this->isPut()) {
+                $data = file_get_contents("php://input");
+                $data = \Zend_Json::decode($data);
+
+                // Download image by url, encode it and save to data param
+                if (isset($data["url"])) {
+                    list($filepath, $status) = $this->downloadImageWithWget($data["url"]);
+                    if ($status != 0) {
+                        $this->encoder->encode(["success" => false, "msg" => "Unable to download image by url ".$data["url"]]);
+
+                        return;
+                    }
+                    $image = base64_encode(file_get_contents($filepath));
+                    $data["data"] = $image;
+                }
+
+                $type = $data["type"];
+                $id = null;
+
+                if ($data["id"]) {
+                    $id = $data["id"];
+                    $asset = Asset::getById($id);
+
+                    if ($asset) {
+                        $this->checkPermission($asset, "update");
+                    }
+
+                    if ($type == "folder") {
+                        $wsData = self::fillWebserviceData("\\Pimcore\\Model\\Webservice\\Data\\Asset\\Folder\\In", $data);
+                        $success = $this->service->updateAssetFolder($wsData);
+                    } else {
+                        $wsData = self::fillWebserviceData("\\Pimcore\\Model\\Webservice\\Data\\Asset\\File\\In", $data);
+                        $success = $this->service->updateAssetFile($wsData);
+                    }
+                } else {
+                    if ($type == "folder") {
+                        $class = "\\Pimcore\\Model\\Webservice\\Data\\Asset\\Folder\\In";
+                        $method = "createAssetFolder";
+                    } else {
+                        $class = "\\Pimcore\\Model\\Webservice\\Data\\Asset\\File\\In";
+                        $method = "createAssetFile";
+                    }
+
+                    $wsData = self::fillWebserviceData($class, $data);
+
+                    $asset = new Asset();
+                    $asset->setId($wsData->parentId);
+                    $this->checkPermission($asset, "create");
+
+                    $id = $this->service->$method($wsData);
+                    $success = true;
+                }
+
+                $this->encoder->encode(["success" => $success, "data" => ["id" => $id]]);
+
+                return;
+            }
+        } catch (\Exception $e) {
+            Logger::error($e);
+            $this->encoder->encode(["success" => false, "msg" => (string) $e]);
+        }
+        $this->encoder->encode(["success" => false]);
+    }
+
+    // Fast download image by url with Wget
+    private function downloadImageWithWget($url)
+    {
+        $url = trim($url);
+        if (empty($url)) {
+            return ['', -1];
+        }
+
+        $filename = explode('/', $url);
+        $filename = $filename[count($filename) - 1];
+
+        $dir = PIMCORE_TEMPORARY_DIRECTORY;
+        $img = $dir.DIRECTORY_SEPARATOR.$filename;
+
+        if ( ! file_exists($img)) {
+            system("wget --tries=5 $url -P $dir", $status);
+        }
+
+        return [$img, $status];
     }
 
     /**
