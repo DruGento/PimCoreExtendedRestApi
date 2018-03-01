@@ -3,6 +3,10 @@
 ## Introduction ##
 Adds additional REST API calls to default PIMCore API
 
+## Requirements
+* Pimcore 4.6
+* wget
+
 ## Installation ##
 
 Install Pimcore plugin:

@@ -267,12 +267,12 @@ class PimCoreExtendedRestApi_RestController extends \Pimcore\Controller\Action\W
 
     /** end point for create/update asset related data.
      * - create asset
-     *      PUT or POST http://[YOUR-DOMAIN]/webservice/rest/asset?apikey=[API-KEY]
+     *      PUT or POST http://[YOUR-DOMAIN]/plugin/PimCoreExtendedRestApi/rest/asset?apikey=[API-KEY]
      *      body: json-encoded asset data in the same format as returned by get asset by id
      *              but with missing id field or id set to 0
      *      returns json encoded asset id
      * - update asset
-     *      PUT or POST http://[YOUR-DOMAIN]/webservice/rest/asset?apikey=[API-KEY]
+     *      PUT or POST http://[YOUR-DOMAIN]/plugin/PimCoreExtendedRestApi/rest/asset?apikey=[API-KEY]
      *      body: same as for create asset but with asset id
      *      returns json encoded success value
      * @throws \Exception
