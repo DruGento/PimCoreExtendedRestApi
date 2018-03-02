@@ -57,3 +57,80 @@ If the wrong URL was specified you will get the following response:
     "msg": "Unable to download image by url http://example.com/images/test.jpg"
 }
 ```
+
+#### Update metadata
+Please use `saveOldMetadata` flag in POST request body if you want to keep old metadata and to add new data to them:
+
+````
+{
+  "id": 100,
+  "url": "http://example.com/images/test.jpg",
+  "parentId": 1,
+  "path": "/Photos/",
+  "type": "image",
+  "filename": "test.jpg",
+  "mimetype": "image/jpg",
+  "saveOldMetadata": true,
+  "metadata": [
+    {
+      "name": "title",
+      "type": "input",
+      "data": "New title after update",
+      "language": "en"
+    },
+    {
+      "name": "copyright",
+      "type": "input",
+      "data": "2018",
+      "language": "en"
+    }
+  ]
+}
+````
+
+You can check result with standard Pimcore request:
+
+http://pimcore.loc/webservice/rest/asset/id/100?apikey=APIKEY
+
+And you will get the next response:
+````
+{
+    "success": true,
+    "data": {
+        "id": 100,
+        "parentId": 1,
+        "type": "image",
+        "filename": "test.jpg",
+        ...
+        "metadata": [
+            {
+                "name": "title",
+                "language": "en",
+                "type": "input",
+                "data": "New title after update"
+            },
+            {
+                "name": "alt",
+                "language": "en",
+                "type": "input",
+                "data": "New alt"
+            },
+            {
+                "name": "description",
+                "language": "en",
+                "type": "textarea",
+                "data": "the new description"
+            },
+            {
+                "name": "copyright",
+                "language": "en",
+                "type": "input",
+                "data": "© John Doe"
+            }
+        ],
+        ...
+    }
+}
+````
+
+If you do not specify flag `saveOldMetadata` or it is will be `false`, then PimCore will delete old metadata and load new ones from the request body if they are specified.

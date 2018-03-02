@@ -273,7 +273,7 @@ class PimCoreExtendedRestApi_RestController extends \Pimcore\Controller\Action\W
      *      returns json encoded asset id
      * - update asset
      *      PUT or POST http://[YOUR-DOMAIN]/plugin/PimCoreExtendedRestApi/rest/asset?apikey=[API-KEY]
-     *      body: same as for create asset but with asset id
+     *      body: same as for create asset but with asset id and saveOldMetadata flag if you want to keep old metadata
      *      returns json encoded success value
      * @throws \Exception
      */
@@ -305,6 +305,27 @@ class PimCoreExtendedRestApi_RestController extends \Pimcore\Controller\Action\W
 
                     if ($asset) {
                         $this->checkPermission($asset, "update");
+                    }
+
+                    // Keep old metadata on update
+                    $isSaveMetadata = isset($data["saveOldMetadata"]) ? $data["saveOldMetadata"] : false;
+                    if ($isSaveMetadata) {
+                        $newMetadata = isset($data["metadata"]) ? $data["metadata"] : [];
+                        $oldMetadata = $asset->getMetadata();
+
+                        // Remove duplicates and merge old and new data
+                        if (count($newMetadata)) {
+                            $metadataWithKeys = [];
+                            foreach ($oldMetadata as $old) {
+                                $metadataWithKeys[$old['name']] = $old;
+                            }
+                            foreach ($newMetadata as $new) {
+                                $metadataWithKeys[$new['name']] = $new;
+                            }
+                            $oldMetadata = array_values($metadataWithKeys);
+                        }
+
+                        $data['metadata'] = $oldMetadata;
                     }
 
                     if ($type == "folder") {
